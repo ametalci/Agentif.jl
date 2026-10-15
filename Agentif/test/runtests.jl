@@ -10,6 +10,8 @@ using LocalSearch
 using SQLite
 using Sockets
 
+include("provider_urls_test.jl")
+
 function dummy_model()
     return Model(
         id = "test-model",
