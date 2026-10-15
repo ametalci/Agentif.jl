@@ -307,7 +307,7 @@ function openai_completions_build_messages(agent::Agent, state::AgentState, inpu
                     non_empty_thinking)
                 if openai_completions_use_reasoning_split(model) || has_openrouter_details
                     assistant_msg.reasoning_details = openai_completions_reasoning_details_from_blocks(non_empty_thinking)
-                elseif compat.requiresThinkingAsText || (isempty(non_empty_text) && isempty(tool_calls))
+                elseif compat.requiresThinkingAsText
                     thinking_text = join((b.thinking for b in non_empty_thinking), "\n\n")
                     if assistant_msg.content === nothing || assistant_msg.content === ""
                         assistant_msg.content = OpenAICompletions.ContentPart[OpenAICompletions.ContentPart(; type = "text", text = thinking_text)]
@@ -322,6 +322,11 @@ function openai_completions_build_messages(agent::Agent, state::AgentState, inpu
                         extra = assistant_msg.extra === nothing ? Dict{String, Any}() : assistant_msg.extra
                         extra[signature] = join((b.thinking for b in non_empty_thinking), "\n")
                         assistant_msg.extra = extra
+                    end
+                    if isempty(non_empty_text) && isempty(tool_calls)
+                        assistant_msg.content = OpenAICompletions.ContentPart[
+                            OpenAICompletions.ContentPart(; type = "text", text = join((b.thinking for b in non_empty_thinking), "\n\n"))
+                        ]
                     end
                 end
             end
