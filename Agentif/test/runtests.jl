@@ -11,6 +11,7 @@ using SQLite
 using Sockets
 
 include("provider_urls_test.jl")
+include("thinking_replay_test.jl")
 
 function dummy_model()
     return Model(
